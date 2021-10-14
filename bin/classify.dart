@@ -114,8 +114,3 @@ void main(List<String> arguments) async {
     }
   }
 }
-
-// 아웃풋 경로 프린팅
-void foo() {
-  final fileEntities = [];
-}
