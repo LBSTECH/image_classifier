@@ -95,15 +95,16 @@ void main(List<String> arguments) {
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
         final outputRegex =
-            RegExp('(${results['input']})(.*?)($basNameWithExtension)');
+            RegExp('(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
         var allMatches = outputRegex.allMatches(dir.path);
+
         var restPath = '';
         for (var element in allMatches) {
           restPath = element.group(2)??'';
         }
         var directory =
             Directory('${outputDirectory.path}$restPath')..createSync(recursive: true);
-        print(path.normalize(directory.path).replaceAll('\\', '/'));
+        print(path.normalize(directory.path).replaceAll(r'\', '/'));
         File(dir.path)
             .copySync(path.joinAll([directory.path, basNameWithExtension]));
       }
@@ -111,7 +112,7 @@ void main(List<String> arguments) {
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
         final outputRegex =
-        RegExp('(${results['input']})(.*?)($basNameWithExtension)');
+        RegExp('(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
         var allMatches = outputRegex.allMatches(dir.path);
         var restPath = '';
         for (var element in allMatches) {
