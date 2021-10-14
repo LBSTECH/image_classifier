@@ -48,7 +48,7 @@ void main(List<String> arguments) async {
     outputDirectory = await Directory(results['output']).create();
   }
 
-  var listSync = inputDirectory.listSync();
+  var listSync = inputDirectory.listSync(recursive: true);
 
   var list = listSync
       .where((element) => _kExtensions.contains(element.path.split('.').last));
@@ -59,7 +59,7 @@ void main(List<String> arguments) async {
     final fileName = dir.path.split('/').last;
     final split = regex.allMatches(fileName);
 
-    var ratio='';
+    var ratio = '';
 
     for (final element in split) {
       ratio = '${element.group(2)}${element.group(3)}';
@@ -83,17 +83,39 @@ void main(List<String> arguments) async {
     if (ratio.key == '1x') {
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
+        final outputRegex =
+            RegExp('(${results['input']})(.*?)($basNameWithExtension)');
+        var allMatches = outputRegex.allMatches(dir.path);
+        var restPath = '';
+        for (var element in allMatches) {
+          restPath = element.group(2)??'';
+        }
+        var directory =
+            await Directory('${outputDirectory.path}$restPath').create(recursive: true);
+        print(directory.path.replaceAll('\\', '/'));
         File(dir.path)
-            .copySync('${outputDirectory.path}/$basNameWithExtension');
+            .copySync('${directory.path}/$basNameWithExtension');
       }
     } else {
-      var directory =
-          await Directory('${outputDirectory.path}/${ratio.key}').create();
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
-        var replaceName = basNameWithExtension.replaceAll(regex,'');
+        final outputRegex =
+        RegExp('(${results['input']})(.*?)($basNameWithExtension)');
+        var allMatches = outputRegex.allMatches(dir.path);
+        var restPath = '';
+        for (var element in allMatches) {
+          restPath = element.group(2)??'';
+        }
+        var directory =
+        await Directory('${outputDirectory.path}$restPath${ratio.key}').create(recursive: true);
+        var replaceName = basNameWithExtension.replaceAll(regex, '');
         File(dir.path).copySync('${directory.path}/$replaceName');
       }
     }
   }
+}
+
+// 아웃풋 경로 프린팅
+void foo() {
+  final fileEntities = [];
 }
