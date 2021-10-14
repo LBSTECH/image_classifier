@@ -90,6 +90,8 @@ void main(List<String> arguments) {
     }
   }
 
+  final outputDirs = <String>{};
+
   for (final ratio in ratios.entries) {
     if (ratio.key == '1x') {
       for (final dir in ratio.value) {
@@ -104,7 +106,7 @@ void main(List<String> arguments) {
         }
         var directory =
             Directory('${outputDirectory.path}$restPath')..createSync(recursive: true);
-        print(path.normalize(directory.path).replaceAll(r'\', '/'));
+        outputDirs.add(path.normalize(directory.path).replaceAll(r'\', '/'));
         File(dir.path)
             .copySync(path.joinAll([directory.path, basNameWithExtension]));
       }
@@ -124,5 +126,9 @@ void main(List<String> arguments) {
         File(dir.path).copySync(path.joinAll([directory.path, replaceName]));
       }
     }
+  }
+
+  for (final outputDir in outputDirs.toList()..sort()) {
+    print(outputDir);
   }
 }
