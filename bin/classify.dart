@@ -5,8 +5,8 @@ import 'package:path/path.dart' as path;
 
 const _kExtensions = ['png', 'jpg', 'svg', 'pdf'];
 
-void main(List<String> arguments) async {
-  var parser = ArgParser();
+void main(List<String> arguments) {
+  final parser = ArgParser();
   var inputDirectory = Directory.current;
   var outputDirectory = Directory.current;
   parser.addOption(
@@ -38,14 +38,25 @@ void main(List<String> arguments) async {
     exit(0);
   }
   if (results.wasParsed('input')) {
-    inputDirectory = await Directory(results['input']).create();
+    final path = results['input'] as String?;
+
+    if (path != null) {
+      final uri = Uri.directory(path, windows: Platform.isWindows);
+      inputDirectory = Directory.fromUri(uri);
+    }
   }
 
   if (!results.options.contains('output')) {
     outputDirectory = inputDirectory;
   }
+
   if (results.wasParsed('output')) {
-    outputDirectory = await Directory(results['output']).create();
+    final path = results['output'] as String?;
+
+    if (path != null) {
+      final uri = Uri.directory(path, windows: Platform.isWindows);
+      outputDirectory = Directory.fromUri(uri)..createSync(recursive: true);
+    }
   }
 
   var listSync = inputDirectory.listSync(recursive: true);
@@ -56,7 +67,7 @@ void main(List<String> arguments) async {
   final regex = RegExp('(${results['separator']})(.*?)(x)');
 
   for (final dir in list) {
-    final fileName = dir.path.split('/').last;
+    final fileName = path.split(dir.path).last;
     final split = regex.allMatches(fileName);
 
     var ratio = '';
@@ -91,10 +102,10 @@ void main(List<String> arguments) async {
           restPath = element.group(2)??'';
         }
         var directory =
-            await Directory('${outputDirectory.path}$restPath').create(recursive: true);
-        print(directory.path.replaceAll('\\', '/'));
+            Directory('${outputDirectory.path}$restPath')..createSync(recursive: true);
+        print(path.normalize(directory.path).replaceAll('\\', '/'));
         File(dir.path)
-            .copySync('${directory.path}/$basNameWithExtension');
+            .copySync(path.joinAll([directory.path, basNameWithExtension]));
       }
     } else {
       for (final dir in ratio.value) {
@@ -107,9 +118,9 @@ void main(List<String> arguments) async {
           restPath = element.group(2)??'';
         }
         var directory =
-        await Directory('${outputDirectory.path}$restPath${ratio.key}').create(recursive: true);
+        Directory('${outputDirectory.path}$restPath${ratio.key}')..createSync(recursive: true);
         var replaceName = basNameWithExtension.replaceAll(regex, '');
-        File(dir.path).copySync('${directory.path}/$replaceName');
+        File(dir.path).copySync(path.joinAll([directory.path, replaceName]));
       }
     }
   }
