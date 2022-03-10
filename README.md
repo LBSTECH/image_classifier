@@ -4,6 +4,8 @@
 
 ### Use
 ```
+flutter pub run [패키지 명]:[실행 프로그램 파일명] -i [이미지 폴더위치]-o [복사 할 폴더 위치]
+
 --input, -i <이미지가 위치해 있는 Directory>
 --output, -o <복사한 이미지가 위치할 Directory> Default : input directory
 --separator, -s <배율 앞에 붙는 구분자> Default : @
