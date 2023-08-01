@@ -1,8 +1,18 @@
 # Image_classification
 
-## Figma에서 Export한 이미지 각 배율에 맞게 자동으로 분류하는 패키지
+## Figma에서 Export한 이미지 각 배율에 맞게 자동으로 분류하는 패키지.
+## Packages that are automatically classified for each magnification of images export from Figma.
 
-### Use
+### Use en
+```
+flutter pub run [package name]:[program file name] -i [image directory]-o [ouput file directory]
+
+--input, -i <image directory path>
+--output, -o <output image directory path> Default : input directory
+--separator, -s <magnification in front of separator> Default : @
+```
+
+### Use ko
 ```
 flutter pub run [패키지 명]:[실행 프로그램 파일명] -i [이미지 폴더위치]-o [복사 할 폴더 위치]
 
