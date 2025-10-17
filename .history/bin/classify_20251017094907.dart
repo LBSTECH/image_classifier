@@ -25,7 +25,7 @@ void main(List<String> arguments) {
       valueHelp: '@',
       defaultsTo: '@');
   parser.addOption(
-    'delete',
+    'directory',
     abbr: 'd',
     help: 'The directory path to search and delete files.',
   );

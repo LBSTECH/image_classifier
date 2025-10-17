@@ -24,16 +24,6 @@ void main(List<String> arguments) {
       help: 'Distinguisher for image magnification.',
       valueHelp: '@',
       defaultsTo: '@');
-  parser.addOption(
-    'delete',
-    abbr: 'd',
-    help: 'The directory path to search and delete files.',
-  );
-  parser.addOption(
-    'name',
-    abbr: 'n',
-    help: 'The file name (without extension) to delete.',
-  );
   parser.addFlag(
     'help',
     abbr: 'h',
@@ -47,13 +37,6 @@ void main(List<String> arguments) {
     print(parser.usage);
     exit(0);
   }
-
-  // 파일 삭제 모드 처리
-  if (results.wasParsed('directory') && results.wasParsed('name')) {
-    _deleteFiles(results['directory'] as String, results['name'] as String);
-    return;
-  }
-
   if (results.wasParsed('input')) {
     final path = results['input'] as String?;
 
@@ -113,16 +96,16 @@ void main(List<String> arguments) {
     if (ratio.key == '1x') {
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
-        final outputRegex = RegExp(
-            '(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
+        final outputRegex =
+            RegExp('(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
         var allMatches = outputRegex.allMatches(dir.path);
 
         var restPath = '';
         for (var element in allMatches) {
-          restPath = element.group(2) ?? '';
+          restPath = element.group(2)??'';
         }
-        var directory = Directory('${outputDirectory.path}$restPath')
-          ..createSync(recursive: true);
+        var directory =
+            Directory('${outputDirectory.path}$restPath')..createSync(recursive: true);
         outputDirs.add(path.normalize(directory.path).replaceAll(r'\', '/'));
         File(dir.path)
             .copySync(path.joinAll([directory.path, basNameWithExtension]));
@@ -130,16 +113,15 @@ void main(List<String> arguments) {
     } else {
       for (final dir in ratio.value) {
         final basNameWithExtension = path.basename(dir.path);
-        final outputRegex = RegExp(
-            '(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
+        final outputRegex =
+        RegExp('(${inputDirectory.path.replaceAll(r'\', r'\\')})(.*?)($basNameWithExtension)');
         var allMatches = outputRegex.allMatches(dir.path);
         var restPath = '';
         for (var element in allMatches) {
-          restPath = element.group(2) ?? '';
+          restPath = element.group(2)??'';
         }
         var directory =
-            Directory('${outputDirectory.path}$restPath${ratio.key}')
-              ..createSync(recursive: true);
+        Directory('${outputDirectory.path}$restPath${ratio.key}')..createSync(recursive: true);
         var replaceName = basNameWithExtension.replaceAll(regex, '');
         File(dir.path).copySync(path.joinAll([directory.path, replaceName]));
       }
@@ -149,37 +131,4 @@ void main(List<String> arguments) {
   for (final outputDir in outputDirs.toList()..sort()) {
     print(outputDir);
   }
-}
-
-/// 특정 디렉토리에서 파일명(확장자 제외)이 일치하는 모든 파일을 삭제합니다.
-void _deleteFiles(String directoryPath, String fileName) {
-  final directory = Directory(directoryPath);
-
-  if (!directory.existsSync()) {
-    print('Error: Directory does not exist: $directoryPath');
-    exit(1);
-  }
-
-  print(
-      'Searching for files with name "$fileName" (any extension) in $directoryPath...\n');
-
-  final files = directory.listSync(recursive: true);
-  var deletedCount = 0;
-
-  for (final entity in files) {
-    if (entity is File) {
-      final fileNameWithoutExt = path.basenameWithoutExtension(entity.path);
-      if (fileNameWithoutExt == fileName) {
-        try {
-          entity.deleteSync();
-          print('Deleted: ${entity.path}');
-          deletedCount++;
-        } catch (e) {
-          print('Failed to delete: ${entity.path} - $e');
-        }
-      }
-    }
-  }
-
-  print('\nTotal deleted: $deletedCount file(s)');
 }

@@ -25,7 +25,7 @@ void main(List<String> arguments) {
       valueHelp: '@',
       defaultsTo: '@');
   parser.addOption(
-    'delete',
+    'directory',
     abbr: 'd',
     help: 'The directory path to search and delete files.',
   );
@@ -154,18 +154,17 @@ void main(List<String> arguments) {
 /// 특정 디렉토리에서 파일명(확장자 제외)이 일치하는 모든 파일을 삭제합니다.
 void _deleteFiles(String directoryPath, String fileName) {
   final directory = Directory(directoryPath);
-
+  
   if (!directory.existsSync()) {
     print('Error: Directory does not exist: $directoryPath');
     exit(1);
   }
-
-  print(
-      'Searching for files with name "$fileName" (any extension) in $directoryPath...\n');
-
+  
+  print('Searching for files with name "$fileName" (any extension) in $directoryPath...\n');
+  
   final files = directory.listSync(recursive: true);
   var deletedCount = 0;
-
+  
   for (final entity in files) {
     if (entity is File) {
       final fileNameWithoutExt = path.basenameWithoutExtension(entity.path);
@@ -180,6 +179,6 @@ void _deleteFiles(String directoryPath, String fileName) {
       }
     }
   }
-
+  
   print('\nTotal deleted: $deletedCount file(s)');
 }

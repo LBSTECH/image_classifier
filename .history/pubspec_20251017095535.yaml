@@ -5,8 +5,7 @@ repository: https://github.com/LBSTECH/image_classifier
 
 environment:
   sdk: '>=2.14.0 <4.0.0'
-executables:
-  classify:
+
 
 dependencies:
   path: ^1.8.0
